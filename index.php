@@ -6,7 +6,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Notas App</h1>
+        <h1>Notas Aplicación</h1>
         <form id="noteForm" method="POST" action="create_note.php">
             <input type="text" name="note" placeholder="Ingresa una nota" required>
             <button type="submit">Agregar Nota</button>
