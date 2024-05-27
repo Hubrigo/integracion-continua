@@ -1,5 +1,5 @@
 <?php
-$host = 'database';
+$host = 'localhost';
 $db = 'notes_db';
 $user = 'root';
 $pass = '123123';
