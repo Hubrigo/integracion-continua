@@ -1,8 +1,8 @@
 <?php
-$host = 'localhost'; // Este debe ser el nombre del servicio MySQL en docker-compose.yml
+$host = '172.17.0.3';
 $db = 'notes_db';
 $user = 'root';
-$pass = '';
+$pass = '123123';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
