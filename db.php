@@ -1,13 +1,16 @@
 <?php
-$host = 'localhost';
+$host = 'mysql';  // Esto hace referencia al servicio MySQL definido en docker-compose.yml
 $db = 'notes_db';
-$user = 'root';
-$pass = '123123';
+$user = 'user1';
+$pass = 'userpassword';
+$port = 3306;
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+    echo "Intentando conectar a la base de datos en $host:$port...\n";
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$db", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    echo "Conexión exitosa a la base de datos $db en $host:$port.\n";
 } catch (PDOException $e) {
-    die("Could not connect to the database $db :" . $e->getMessage());
+    die("No se pudo conectar a la base de datos $db :" . $e->getMessage());
 }
 ?>
