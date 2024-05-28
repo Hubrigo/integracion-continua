@@ -1,4 +1,5 @@
 <?php
+ob_start();
 require 'db.php';
 
 if (isset($_POST['note'])) {
@@ -12,4 +13,5 @@ if (isset($_POST['note'])) {
         echo "Error adding note.";
     }
 }
+ob_end_flush();
 ?>
