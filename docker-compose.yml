@@ -26,7 +26,8 @@ services:
       - mysql
 
   jenkins:
-    image: jenkinsci/blueocean
+    build:
+      context: ./jenkins
     container_name: jenkins-container
     user: root
     environment:
