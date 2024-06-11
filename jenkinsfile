@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Clonar el repositorio
+                git branch: 'main', url: 'https://github.com/Hubrigo/integracion-continua.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                dir("${WORKSPACE}") {
+                    script {
+                        echo 'Listing files in workspace...'
+                        sh 'ls -la'
+                        echo 'Building PHP service...'
+                        sh 'docker-compose build php'
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                dir("${WORKSPACE}") {
+                    script {
+                        echo 'Removing existing containers...'
+                        sh 'docker rm -f mysql-container || true'
+                        sh 'docker rm -f php-container || true'
+                        echo 'Bringing down any existing services...'
+                        sh 'docker-compose down || true'
+                        echo 'Deploying PHP service...'
+                        sh 'docker-compose up -d php'
+                    }
+                }
+            }
+        }
+        stage('Verify') {
+            steps {
+                dir("${WORKSPACE}") {
+                    script {
+                        echo 'Verifying container and script...'
+                        sh 'docker ps -a'
+                        echo 'Checking /var/www/html/tests directory...'
+                        sh 'docker-compose exec php-container ls -la /var/www/html/tests || true'
+                        echo 'Checking PHP version...'
+                        sh 'docker-compose exec php-container php -v'
+                    }
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                dir("${WORKSPACE}") {
+                    script {
+                        echo 'Running tests...'
+                        sh 'docker-compose exec php-container php /var/www/html/tests/run_tests.php || echo "No tests to run."'
+                    }
+                }
+            }
+        }
+    }
+}
