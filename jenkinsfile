@@ -25,7 +25,6 @@ pipeline {
             steps {
                 script {
                     // Etiquetar las imágenes construidas
-                    // Ajusta los nombres y etiquetas según sea necesario
                     sh 'docker tag php-container:latest php-container:1.0'
                     sh 'docker tag mysql-container:latest mysql-container:1.0'
                     sh 'docker tag jenkins-container:latest jenkins-container:1.0'
@@ -46,7 +45,6 @@ pipeline {
             steps {
                 script {
                     // Verificar que el despliegue fue exitoso
-                    // Puedes agregar aquí pasos reales para verificar el despliegue
                     sh 'echo "Verifying deployment..."'
                     sh 'curl -f http://localhost:3000 || exit 1'
                 }
