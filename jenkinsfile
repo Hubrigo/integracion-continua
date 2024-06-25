@@ -59,7 +59,40 @@ pipeline {
             steps {
                 script {
                     // Desplegar la aplicación utilizando Docker Compose con nombres y puertos únicos
-                    sh "MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME} PHP_CONTAINER_NAME=${PHP_CONTAINER_NAME} JENKINS_CONTAINER_NAME=${JENKINS_CONTAINER_NAME} MYSQL_PORT=${MYSQL_PORT} PHP_PORT=${PHP_PORT} JENKINS_PORT1=${JENKINS_PORT1} JENKINS_PORT2=${JENKINS_PORT2} ${DOCKER_COMPOSE} up -d"
+                    sh """
+                        MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME} 
+                        PHP_CONTAINER_NAME=${PHP_CONTAINER_NAME} 
+                        JENKINS_CONTAINER_NAME=${JENKINS_CONTAINER_NAME} 
+                        MYSQL_PORT=${MYSQL_PORT} 
+                        PHP_PORT=${PHP_PORT} 
+                        JENKINS_PORT1=${JENKINS_PORT1} 
+                        JENKINS_PORT2=${JENKINS_PORT2} 
+                        ${DOCKER_COMPOSE} up -d
+                    """
+                }
+            }
+        }
+
+        stage('Wait for PHP Server') {
+            steps {
+                script {
+                    // Esperar hasta que el servidor PHP esté listo
+                    def maxRetries = 10
+                    def retryCount = 0
+                    def waitTime = 5 // segundos
+
+                    while (retryCount < maxRetries) {
+                        try {
+                            sh "curl -f http://localhost:${PHP_PORT}"
+                            break
+                        } catch (Exception e) {
+                            retryCount++
+                            if (retryCount == maxRetries) {
+                                error "Server did not start in time"
+                            }
+                            sleep time: waitTime, unit: 'SECONDS'
+                        }
+                    }
                 }
             }
         }
@@ -70,6 +103,19 @@ pipeline {
                     // Verificar que el despliegue fue exitoso
                     sh "echo Verifying deployment on port ${PHP_PORT}..."
                     sh "curl -f http://localhost:${PHP_PORT} || exit 1"
+                }
+            }
+        }
+
+        stage('Print Jenkins Access Info') {
+            steps {
+                script {
+                    // Imprimir información de acceso a Jenkins
+                    sh """
+                        echo "Jenkins is running on:"
+                        echo "Jenkins UI: http://localhost:${JENKINS_PORT1}/jenkins"
+                        echo "Jenkins Agent Port: ${JENKINS_PORT2}"
+                    """
                 }
             }
         }
