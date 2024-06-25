@@ -38,10 +38,13 @@ pipeline {
         stage('Tag') {
             steps {
                 script {
-                    // Etiquetar las imágenes construidas
-                    sh 'docker tag php-container:latest php-container:1.0'
-                    sh 'docker tag mysql-container:latest mysql-container:1.0'
-                    sh 'docker tag jenkins-container:latest jenkins-container:1.0'
+                    // Obtener los nombres de las imágenes generadas por docker-compose
+                    sh 'docker images'
+
+                    // Etiquetar las imágenes construidas correctamente
+                    sh 'docker tag pipeline_3_php:latest php-container:1.0'
+                    sh 'docker tag pipeline_3_mysql:latest mysql-container:1.0'
+                    sh 'docker tag pipeline_3_jenkins:latest jenkins-container:1.0'
                 }
             }
         }
