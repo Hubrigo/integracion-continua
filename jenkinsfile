@@ -16,7 +16,10 @@ pipeline {
             steps {
                 dir('integracion-continua') {
                     script {
+                        // Listar el contenido del directorio para verificar la presencia del archivo
+                        sh 'ls -la'
                         
+                        // Construir las imágenes Docker
                         sh "${DOCKER_COMPOSE} build"
                     }
                 }
