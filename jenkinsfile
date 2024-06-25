@@ -43,7 +43,6 @@ pipeline {
 
                     // Etiquetar las imágenes construidas correctamente
                     sh 'docker tag pipeline_3_php:latest php-container:1.0'
-                    sh 'docker tag pipeline_3_mysql:latest mysql-container:1.0'
                     sh 'docker tag pipeline_3_jenkins:latest jenkins-container:1.0'
                 }
             }
