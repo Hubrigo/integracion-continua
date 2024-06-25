@@ -22,29 +22,15 @@ pipeline {
                     // Listar todos los archivos en el directorio raíz del workspace
                     sh 'echo "Files in the root workspace directory:"'
                     sh 'ls -la'
-                    
-                    // Listar todos los archivos en el directorio 'integracion-continua'
-                    sh 'echo "Files in the integracion-continua directory:"'
-                    sh 'ls -la integracion-continua'
                 }
             }
         }
 
         stage('Build') {
             steps {
-                dir('integracion-continua') {
-                    script {
-                        // Mostrar la ruta completa dentro de integracion-continua
-                        sh 'echo "Current directory inside integracion-continua:"'
-                        sh 'pwd'
-                        
-                        // Listar el contenido del directorio para verificar la presencia del archivo
-                        sh 'echo "Files in integracion-continua:"'
-                        sh 'ls -la'
-                        
-                        // Construir las imágenes Docker
-                        sh "${DOCKER_COMPOSE} build"
-                    }
+                script {
+                    // Construir las imágenes Docker
+                    sh "${DOCKER_COMPOSE} build"
                 }
             }
         }
@@ -62,11 +48,9 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                dir('integracion-continua') {
-                    script {
-                        // Desplegar la aplicación utilizando Docker Compose
-                        sh "${DOCKER_COMPOSE} up -d"
-                    }
+                script {
+                    // Desplegar la aplicación utilizando Docker Compose
+                    sh "${DOCKER_COMPOSE} up -d"
                 }
             }
         }
