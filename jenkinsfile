@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_COMPOSE = 'docker-compose -f /integracion-continua/docker-compose.yml'
+        DOCKER_COMPOSE = 'docker-compose -f docker-compose.yml'
     }
 
     stages {
@@ -14,9 +14,11 @@ pipeline {
 
         stage('Build') {
             steps {
-                script {
-                    // Construir las imágenes Docker
-                    sh "${DOCKER_COMPOSE} build"
+                dir('integracion-continua') {
+                    script {
+                        
+                        sh "${DOCKER_COMPOSE} build"
+                    }
                 }
             }
         }
@@ -34,9 +36,11 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                script {
-                    // Desplegar la aplicación utilizando Docker Compose
-                    sh "${DOCKER_COMPOSE} up -d"
+                dir('integracion-continua') { // Cambia a la carpeta correcta si es necesario
+                    script {
+                        // Desplegar la aplicación utilizando Docker Compose
+                        sh "${DOCKER_COMPOSE} up -d"
+                    }
                 }
             }
         }
