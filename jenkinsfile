@@ -48,6 +48,17 @@ pipeline {
             }
         }
 
+        stage('Clean Existing Containers') {
+            steps {
+                script {
+                    // Detener y eliminar contenedores existentes
+                    sh 'docker rm -f mysql-container || true'
+                    sh 'docker rm -f php-container || true'
+                    sh 'docker rm -f jenkins-container || true'
+                }
+            }
+        }
+
         stage('Deploy') {
             steps {
                 script {
