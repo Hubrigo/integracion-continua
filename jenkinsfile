@@ -6,6 +6,10 @@ pipeline {
         MYSQL_CONTAINER_NAME = "mysql-container-${BUILD_ID}"
         PHP_CONTAINER_NAME = "php-container-${BUILD_ID}"
         JENKINS_CONTAINER_NAME = "jenkins-container-${BUILD_ID}"
+        MYSQL_PORT = sh(script: 'shuf -i 3307-3999 -n 1', returnStdout: true).trim()
+        PHP_PORT = sh(script: 'shuf -i 8000-8999 -n 1', returnStdout: true).trim()
+        JENKINS_PORT1 = sh(script: 'shuf -i 10000-10999 -n 1', returnStdout: true).trim()
+        JENKINS_PORT2 = sh(script: 'shuf -i 11000-11999 -n 1', returnStdout: true).trim()
     }
 
     stages {
@@ -54,8 +58,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Desplegar la aplicación utilizando Docker Compose con nombres únicos
-                    sh "MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME} PHP_CONTAINER_NAME=${PHP_CONTAINER_NAME} JENKINS_CONTAINER_NAME=${JENKINS_CONTAINER_NAME} ${DOCKER_COMPOSE} up -d"
+                    // Desplegar la aplicación utilizando Docker Compose con nombres y puertos únicos
+                    sh "MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME} PHP_CONTAINER_NAME=${PHP_CONTAINER_NAME} JENKINS_CONTAINER_NAME=${JENKINS_CONTAINER_NAME} MYSQL_PORT=${MYSQL_PORT} PHP_PORT=${PHP_PORT} JENKINS_PORT1=${JENKINS_PORT1} JENKINS_PORT2=${JENKINS_PORT2} ${DOCKER_COMPOSE} up -d"
                 }
             }
         }
@@ -64,8 +68,8 @@ pipeline {
             steps {
                 script {
                     // Verificar que el despliegue fue exitoso
-                    sh 'echo "Verifying deployment..."'
-                    sh 'curl -f http://localhost:3000 || exit 1'
+                    sh "echo Verifying deployment on port ${PHP_PORT}..."
+                    sh "curl -f http://localhost:${PHP_PORT} || exit 1"
                 }
             }
         }
