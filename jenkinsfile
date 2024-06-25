@@ -3,6 +3,9 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE = 'docker-compose -f docker-compose.yml'
+        MYSQL_CONTAINER_NAME = "mysql-container-${BUILD_ID}"
+        PHP_CONTAINER_NAME = "php-container-${BUILD_ID}"
+        JENKINS_CONTAINER_NAME = "jenkins-container-${BUILD_ID}"
     }
 
     stages {
@@ -48,21 +51,11 @@ pipeline {
             }
         }
 
-        stage('Clean Existing Containers') {
-            steps {
-                script {
-                    // Detener y eliminar contenedores existentes
-                    sh 'docker rm -f mysql-container || true'
-                    sh 'docker rm -f php-container || true'
-                }
-            }
-        }
-
         stage('Deploy') {
             steps {
                 script {
-                    // Desplegar la aplicación utilizando Docker Compose
-                    sh "${DOCKER_COMPOSE} up -d"
+                    // Desplegar la aplicación utilizando Docker Compose con nombres únicos
+                    sh "MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME} PHP_CONTAINER_NAME=${PHP_CONTAINER_NAME} JENKINS_CONTAINER_NAME=${JENKINS_CONTAINER_NAME} ${DOCKER_COMPOSE} up -d"
                 }
             }
         }
