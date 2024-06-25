@@ -3,6 +3,13 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE = 'docker-compose -f docker-compose.yml'
+        MYSQL_CONTAINER_NAME = "mysql-container-${BUILD_ID}"
+        PHP_CONTAINER_NAME = "php-container-${BUILD_ID}"
+        JENKINS_CONTAINER_NAME = "jenkins-container-${BUILD_ID}"
+        MYSQL_PORT = sh(script: 'shuf -i 3307-3999 -n 1', returnStdout: true).trim()
+        PHP_PORT = sh(script: 'shuf -i 8000-8999 -n 1', returnStdout: true).trim()
+        JENKINS_PORT1 = sh(script: 'shuf -i 10000-10999 -n 1', returnStdout: true).trim()
+        JENKINS_PORT2 = sh(script: 'shuf -i 11000-11999 -n 1', returnStdout: true).trim()
     }
 
     stages {
@@ -51,27 +58,17 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Desplegar la aplicación utilizando Docker Compose
+                    // Desplegar la aplicación utilizando Docker Compose con nombres y puertos únicos
                     sh """
-                        MYSQL_CONTAINER_NAME=mysql-container-\$(shuf -i 1000-9999 -n 1) \
-                        PHP_CONTAINER_NAME=php-container-\$(shuf -i 1000-9999 -n 1) \
-                        JENKINS_CONTAINER_NAME=jenkins-container-\$(shuf -i 1000-9999 -n 1) \
-                        MYSQL_PORT=\$(shuf -i 3307-3999 -n 1) \
-                        PHP_PORT=\$(shuf -i 8000-8999 -n 1) \
-                        JENKINS_PORT1=\$(shuf -i 10000-10999 -n 1) \
-                        JENKINS_PORT2=\$(shuf -i 11000-11999 -n 1) \
+                        MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME} 
+                        PHP_CONTAINER_NAME=${PHP_CONTAINER_NAME} 
+                        JENKINS_CONTAINER_NAME=${JENKINS_CONTAINER_NAME} 
+                        MYSQL_PORT=${MYSQL_PORT} 
+                        PHP_PORT=${PHP_PORT} 
+                        JENKINS_PORT1=${JENKINS_PORT1} 
+                        JENKINS_PORT2=${JENKINS_PORT2} 
                         ${DOCKER_COMPOSE} up -d
                     """
-                }
-            }
-        }
-
-        stage('Verify Deployment') {
-            steps {
-                script {
-                    // Verificar que el despliegue fue exitoso
-                    // Puedes agregar cualquier otro comando aquí si es necesario
-                    sh 'echo "Deployment successful!"'
                 }
             }
         }
@@ -79,8 +76,12 @@ pipeline {
         stage('Print Jenkins Access Info') {
             steps {
                 script {
-                    // Imprimir información para acceder a Jenkins
-                    sh 'echo "Jenkins is running at http://localhost:${JENKINS_PORT1}/jenkins"'
+                    // Imprimir información de acceso a Jenkins
+                    sh """
+                        echo "Jenkins is running on:"
+                        echo "Jenkins UI: http://localhost:${JENKINS_PORT1}/jenkins"
+                        echo "Jenkins Agent Port: ${JENKINS_PORT2}"
+                    """
                 }
             }
         }
