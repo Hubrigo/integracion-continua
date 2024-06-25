@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_COMPOSE = 'docker-compose -f docker-compose.yml'
+        DOCKER_COMPOSE = 'docker-compose -f /var/jenkins_home/workspace/Pipeline_3/integracion-continua/docker-compose.yml'
     }
 
     stages {
